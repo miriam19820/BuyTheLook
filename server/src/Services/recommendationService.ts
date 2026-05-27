@@ -18,39 +18,33 @@ export class RecommendationService {
       return isWithinBudget && !hasAvoidedColor;
     });
 
-    // Edge case: לא נשארו מוצרים אחרי הסינון
+   
     if (filteredProducts.length === 0) {
       return [];
     }
 
-    // שלב 2: דירוג (Scoring)
-    // נותנים נקודות על כל התאמה לפרופיל
+
     const scoredProducts = filteredProducts.map(product => {
       let score = 0;
 
-      // בונוס על התאמה לאירוע (הכי חשוב)
+   
       if (product.occasions.includes(user.occasion)) score += 3;
-      
-      // בונוס על התאמה לסטייל
+  
       const matchingStyles = product.style_tags.filter(tag => user.style_preferences.includes(tag));
       score += matchingStyles.length * 2;
 
-      // בונוס על צבעים אהובים
       const matchingColors = product.colors.filter(color => user.favorite_colors.includes(color));
       score += matchingColors.length;
 
       return { product, score };
     });
 
-    // שלב 3: מיון ובחירת הטובים ביותר
     const topProducts = scoredProducts
       .sort((a, b) => b.score - a.score)
       .slice(0, 5)
       .map(item => item.product);
 
-    // שלב 4: יצירת הסבר (Generative Layer)
-    // בעולם אמיתי: כאן היינו שולחים את topProducts ל-OpenAI API
-    // למטרת המטלה (כדי שירוץ בלי מפתחות API) נייצר הסבר חכם שמדמה את ה-LLM
+
     return topProducts.map(product => ({
       product_id: product.product_id,
       name: product.name,
@@ -59,7 +53,7 @@ export class RecommendationService {
     }));
   }
 
-  // פונקציה שמדמה את ה-LLM ומייצרת משפט הסבר אישי מנומק
+
   private generateExplanation(user: UserProfile, product: Product): string {
     const reasons: string[] = [];
     
@@ -81,7 +75,7 @@ export class RecommendationService {
       return `A great piece that fits comfortably under your $${user.budget_max} budget.`;
     }
 
-    // חיבור הסיבות למשפט טבעי אחד
+  
     const explanation = `Recommended because it is ${reasons.join(' and ')}.`;
 
     return explanation.charAt(0).toUpperCase() + explanation.slice(1);
