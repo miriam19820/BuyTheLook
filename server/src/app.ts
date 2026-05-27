@@ -13,6 +13,7 @@ const app = express();
 
 // הגנה על כותרות HTTP
 app.use(helmet());
+app.use(cors({ origin: 'http://localhost:5173' }));
 
 // איפשור גישה מצד לקוח (כדי שהפרונט-אנד העתידי יוכל לשלוח בקשות)
 app.use(cors());
